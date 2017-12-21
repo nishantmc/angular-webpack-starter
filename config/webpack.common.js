@@ -43,8 +43,11 @@ module.exports = {
         include: helpers.root('src', 'app'),
         loader: 'raw-loader'
       },
-      // all css required in src/app files will be merged in js files
-      {test: /\.(scss|sass)$/, exclude: helpers.root('src', 'style'), loader: 'raw-loader!postcss-loader!sass-loader'},
+      {
+        test: /\.scss$/,
+        exclude: /node_modules/,
+        loaders: ['raw-loader', 'sass-loader'] // sass-loader not scss-loader
+      }
     ]
   },
 
