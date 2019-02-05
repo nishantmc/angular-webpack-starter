@@ -1,19 +1,42 @@
 var webpackConfig = require('./webpack.test');
 
+// Karma configuration file, see link for more information
+// https://karma-runner.github.io/1.0/config/configuration-file.html
+
 module.exports = function (config) {
-  var _config = {
+  config.set({
     basePath: '',
-
-    frameworks: ['jasmine'],
-
     files: [
-      {pattern: './config/karma-test-shim.js', watched: false}
+      { pattern: 'src/polyfills.ts' },
+      { pattern: 'src/test.ts' }
     ],
-
     preprocessors: {
-      './config/karma-test-shim.js': ['webpack', 'sourcemap']
+      'src/polyfills.ts': ['webpack'],
+      'src/test.ts': ['webpack']
     },
-
+    frameworks: ['jasmine'],
+    plugins: [
+      require('karma-jasmine'),
+      require('karma-webpack'),
+      require('karma-chrome-launcher'),
+      require('karma-jasmine-html-reporter'),
+      require('karma-coverage-istanbul-reporter'),
+    ],
+    client: {
+      clearContext: false // leave Jasmine Spec Runner output visible in browser
+    },
+    coverageIstanbulReporter: {
+      dir: require('path').join(__dirname, '../coverage'),
+      reports: ['html', 'lcovonly', 'text-summary'],
+      fixWebpackSourcePaths: true
+    },
+    reporters: ['progress', 'kjhtml'],
+    port: 9876,
+    colors: true,
+    logLevel: config.LOG_INFO,
+    autoWatch: true,
+    browsers: ['Chrome'],
+    singleRun: false,
     webpack: webpackConfig,
 
     webpackMiddleware: {
@@ -22,16 +45,7 @@ module.exports = function (config) {
 
     webpackServer: {
       noInfo: true
-    },
+    }
 
-    reporters: ['progress', 'kjhtml'],
-    port: 9876,
-    colors: true,
-    logLevel: config.LOG_INFO,
-    autoWatch: false,
-    browsers: ['Chrome'],
-    singleRun: true
-  };
-
-  config.set(_config);
+  });
 };

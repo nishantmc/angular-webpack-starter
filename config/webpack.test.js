@@ -2,10 +2,25 @@ var webpack = require('webpack');
 var helpers = require('./helpers');
 
 module.exports = {
+  /* Providing the mode configuration option tells webpack to use its built-in optimizations accordingly.*/
+  mode: 'development',
+
+  output: {
+    filename: '[name]'
+  },
+
   devtool: 'inline-source-map',
 
   resolve: {
     extensions: ['.ts', '.js']
+  },
+
+    /* Use the optimization.noEmitOnErrors to skip the emitting phase whenever there are errors 
+  while compiling. This ensures that no erroring assets are emitted. The emitted flag in the 
+  stats is false for all assets. */
+  optimization: {
+    splitChunks: false,
+    runtimeChunk: false
   },
 
   module: {
@@ -15,9 +30,10 @@ module.exports = {
         loaders: [
           {
             loader: 'awesome-typescript-loader',
-            options: { configFileName: helpers.root('src', 'tsconfig.json') }
+            options: { configFileName: helpers.root('src/tsconfig.spec.json') }
           } , 'angular2-template-loader'
-        ]
+        ],
+        exclude: [/node_modules/]
       },
       {
         test: /\.html$/,
@@ -29,15 +45,17 @@ module.exports = {
         loader: 'null-loader'
       },
       {
-        test: /\.css$/,
+        test: /\.(scss|sass)$/,
+        use: [
+          'to-string-loader',
+            { loader: 'css-loader', options: { sourceMap: true } },
+            { loader: 'sass-loader', options: { sourceMap: true } }
+        ]
+       },
+      { test: /\.css$/,
         exclude: helpers.root('src', 'app'),
-        loader: 'null-loader'
-      },
-      {
-        test: /\.css$/,
-        include: helpers.root('src', 'app'),
-        loader: 'raw-loader'
-      }
+        loaders: ['to-string-loader', 'css-loader'] }
+
     ]
   },
 
